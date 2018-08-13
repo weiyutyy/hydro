@@ -14,6 +14,8 @@ OBJS = \
 	module_gw_gw2d.o \
 	module_HYDRO_io.o \
  	module_RT.o \
+        module_overlandrouting_sediment.o \
+	module_SEDIMENT_io.o \
 	Noah_distr_routing.o \
 	module_channel_routing.o \
 	module_lsm_forcing.o \

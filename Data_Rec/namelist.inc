@@ -28,7 +28,8 @@
                   SUBRTSWCRT,OVRTSWCRT,AGGFACTRT, &
                   GWBASESWCRT,  GW_RESTART,RSTRT_SWC,TERADJ_SOLAR, &
                   sys_cpl, gwChanCondSw, GwPreCycles, GwSpinCycles, GwPreDiagInterval, &
-                  gwsoilcpl, UDMP_OPT
+                  gwsoilcpl, UDMP_OPT,&
+		  sediment_option !! DX ADD
           logical:: GwPreDiag, GwSpinUp
           real:: DTRT_TER,DTRT_CH, DTCT, dxrt0,  gwChanCondConstIn, gwChanCondConstOut, gwIhShift
           character(len=256) :: route_topo_f=""

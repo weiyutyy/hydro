@@ -44,7 +44,8 @@ CONTAINS
                     GWBASESWCRT,  GW_RESTART,RSTRT_SWC,TERADJ_SOLAR, &
                     sys_cpl, rst_typ, rst_bi_in, rst_bi_out, &
                     gwChanCondSw, GwPreCycles, GwSpinCycles, GwPreDiagInterval, gwsoilcpl, &
-                    UDMP_OPT
+                    UDMP_OPT,&
+                    sediment_option !! DX add
           real:: DTRT_TER,DTRT_CH,dxrt, gwChanCondConstIn, gwChanCondConstOut, gwIhShift
           character(len=256) :: route_topo_f=""
           character(len=256) :: route_chan_f=""
@@ -104,7 +105,8 @@ CONTAINS
                     gwstrmfil,GW_RESTART,RSTRT_SWC,TERADJ_SOLAR, sys_cpl, &
                     order_to_write , rst_typ, rst_bi_in, rst_bi_out, gwsoilcpl, &
                     CHRTOUT_DOMAIN,CHRTOUT_GRID,LSMOUT_DOMAIN,RTOUT_DOMAIN, output_gw, outlake, udmap_file, &
-                    UDMP_OPT, GWBUCKPARM_file, iocflag
+                    UDMP_OPT, GWBUCKPARM_file, iocflag,&
+                    sediment_option !! DX ADD
 
    UDMP_OPT = 0
    rst_bi_in = 0
@@ -320,6 +322,8 @@ CONTAINS
     nlst%rst_bi_in = rst_bi_in
     nlst%rst_bi_out = rst_bi_out
     nlst%order_to_write = order_to_write
+    nlst%sediment_option=sediment_option
+
 ! files
     nlst%route_topo_f   =  route_topo_f
     nlst%route_chan_f = route_chan_f 
