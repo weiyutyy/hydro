@@ -1,31 +1,10 @@
-!  Program Name:
-!  Author(s)/Contact(s):
-!  Abstract:
-!  History Log:
-!  <brief list of changes to this source file>
-! 
-!  Usage:
-!  Parameters: <Specify typical arguments passed>
-!  Input Files:
-!        <list file names and briefly describe the data they include>
-!  Output Files:
-!        <list file names and briefly describe the information they include>
-! 
-!  Condition codes:
-!        <list exit condition or error codes returned >
-!        If appropriate, descriptive troubleshooting instructions or
-!        likely causes for failures could be mentioned here with the
-!        appropriate error code
-! 
-!  User controllable options: <if applicable>
-
 module module_HRLDAS_HYDRO
 
 ! NDHMS  module   
 #ifdef MPP_LAND
     use module_mpp_land, only: global_nx, global_ny, decompose_data_real, &
                  write_io_real, my_id, mpp_land_bcast_real1, IO_id, &
-                 mpp_land_bcast_int1, mpp_land_sync
+                 mpp_land_bcast_int1
 #endif
     use module_HYDRO_drv, only: HYDRO_ini, HYDRO_exe, HYDRO_rst_out
     use module_rt_data, only:  rt_domain
@@ -73,7 +52,7 @@ CONTAINS
 
         did = 1
 
-        if (nlst_rt(did)%rtFlag .eq. 0) return
+
 
 !        write(6,*) "nlst_rt(did)%CHANRTSWCRT nlst_rt(did)%SUBRTSWCRT  nlst_rt(did)%OVRTSWCRT =", &
 !                 nlst_rt(did)%CHANRTSWCRT, nlst_rt(did)%SUBRTSWCRT,  nlst_rt(did)%OVRTSWCRT
@@ -194,12 +173,9 @@ CONTAINS
            
            call HYDRO_ini(ntime,did,ix0=1,jx0=1)
 
-           if(nlst_rt(did)%rtFlag .eq. 0) return
-
             if(nlst_rt(did)%sys_cpl .ne. 1) then
-               write(6,*) "FATAL ERROR: sys_cpl should be 1."
-                call hydro_stop("In module_hrldas_HYDRO.F hrldas_cpl_HYDRO_ini()"// &
-                                           " - sys_cpl should be 1. Check hydro.namelist file.")
+               write(6,*) "Error: sys_cpl should be 1."
+               call hydro_stop("hrldas_cpl_HYDRO_ini")
             endif
 
            RT_DOMAIN(did)%initialized = .true.
@@ -258,44 +234,15 @@ CONTAINS
        implicit none
        integer iunit
        character(len=16) fileout
-       character(len=32) diag_prefix
-#ifdef NCEP_WCOSS
-       integer len, status 
-#endif
 
        if(open_unit_status == 999) return
        open_unit_status = 999 
 
 
-#ifdef NCEP_WCOSS
-       CALL GET_ENVIRONMENT_VARIABLE('FORT78',diag_prefix, len, status, .true.)
-       if (status .ge. 2) then
-          write (*,*) 'FATAL ERROR: In module_hrldas_HYDRO.F open_print_mpp() - '// &
-                      'get_environment_variable failed: status = ', status
-          stop
-       end if
-       if (status .eq. 1) then
-          write (*,*) 'FATAL ERROR: In module_hrldas_HYDRO.F open_print_mpp() - '// &
-                      'env var does not exist'
-          stop
-       end if
-       if (status .eq. -1) then
-          write (*,*) 'env var length = ', len, ' truncated to 32'
-          len = 32
-       end if
-       if (len .eq. 0) then
-         write (*,*) 'FATAL ERROR: In module_hrldas_HYDRO.F open_print_mpp() - '// &
-                     'env var exists  but has no value'
-         stop
-       end if
-#else
-       diag_prefix = 'diag_hydro.'
-#endif
-
 #ifdef MPP_LAND  
-       write(fileout,'(a11,i0.5)') TRIM(diag_prefix),my_id    
+       write(fileout,'(a11,i0.5)') "diag_hydro.",my_id    
 #else
-       write(fileout,'(a11,i0.5)') TRIM(diag_prefix),0    
+       write(fileout,'(a11,i0.5)') "diag_hydro.",0    
 #endif
        open(iunit,file=fileout,form="formatted")
      end subroutine open_print_mpp

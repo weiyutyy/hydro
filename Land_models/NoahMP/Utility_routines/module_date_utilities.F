@@ -1,23 +1,3 @@
-!  Program Name:
-!  Author(s)/Contact(s):
-!  Abstract:
-!  History Log:
-! 
-!  Usage:
-!  Parameters: <Specify typical arguments passed>
-!  Input Files:
-!        <list file names and briefly describe the data they include>
-!  Output Files:
-!        <list file names and briefly describe the information they include>
-! 
-!  Condition codes:
-!        <list exit condition or error codes returned >
-!        If appropriate, descriptive troubleshooting instructions or
-!        likely causes for failures could be mentioned here with the
-!        appropriate error code
-! 
-!  User controllable options: <if applicable>
-
 module Module_Date_utilities
 contains
   subroutine geth_newdate (ndate, odate, idt)
@@ -129,7 +109,7 @@ contains
           ! Ten thousandths
           units = 8
        case default
-          write(*,*) 'FATAL ERROR: In geth_newdate() - odd length: #'//trim(odate)//'#'
+          write(*,*) 'ERROR: geth_newdate:  odd length: #'//trim(odate)//'#'
           stop
        end select
 
@@ -181,7 +161,7 @@ contains
           ! Ten thousandths
           units = 8
        case default
-          write(*,*) 'FATAL ERROR: In geth_newdate() - odd length: #'//trim(odate)//'#'
+          write(*,*) 'ERROR: geth_newdate:  odd length: #'//trim(odate)//'#'
           stop
        end select
     endif
@@ -256,7 +236,7 @@ contains
 !KWM      END IF
 
     if (.not.opass) then
-       write(*,*) 'FATAL ERROR: In geth_newdate() - Crazy ODATE: ', odate(1:oldlen), oldlen
+       write(*,*) 'Crazy ODATE: ', odate(1:oldlen), oldlen
        stop
     end if
 
@@ -302,7 +282,7 @@ contains
        nsec   = 0
        nfrac  = 0
     else
-       write(*,'(''FATAL ERROR: geth_newdate() - Strange length for ODATE: '', i3)') &
+       write(*,'(''GETH_NEWDATE: Strange length for ODATE: '', i3)') &
             oldlen
        write(*,*) '#'//odate(1:oldlen)//'#'
        stop
@@ -508,7 +488,7 @@ contains
     oldlen = len(olddate)
     newlen = len(newdate)
     if (newlen.ne.oldlen) then
-       write(*,'("FATAL ERROR: In geth_idts() - NEWLEN /= OLDLEN: ", A, 3x, A)') newdate(1:newlen), olddate(1:oldlen)
+       write(*,'("GETH_IDTS: NEWLEN /= OLDLEN: ", A, 3x, A)') newdate(1:newlen), olddate(1:oldlen)
        stop
     endif
 
@@ -533,14 +513,14 @@ contains
     if (odate(5:5) == "-") then
        punct = .TRUE.
        if (ndate(5:5) /= "-") then
-          write(*,'("FATAL ERROR: In geth_idts() - Dates appear to be different formats: ", A, 3x, A)') &
+          write(*,'("GETH_IDTS: Dates appear to be different formats: ", A, 3x, A)') &
                ndate(1:newlen), odate(1:oldlen)
           stop
        endif
     else
        punct = .FALSE.
        if (ndate(5:5) == "-") then
-          write(*,'("FATAL ERROR: In geth_idts() - Dates appear to be different formats: ", A, 3x, A)') &
+          write(*,'("GETH_IDTS: Dates appear to be different formats: ", A, 3x, A)') &
                ndate(1:newlen), odate(1:oldlen)
           stop
        endif
@@ -586,7 +566,7 @@ contains
           ! Ten thousandths
           units = 8
        case default
-          write(*,*) 'FATAL ERROR: In geth_idts() - odd length: #'//trim(odate)//'#'
+          write(*,*) 'ERROR: geth_idts:  odd length: #'//trim(odate)//'#'
           stop
        end select
     else
@@ -631,7 +611,7 @@ contains
           ! Ten thousandths
           units = 8
        case default
-          write(*,*) 'FATAL ERROR: In geth_idts() - odd length: #'//trim(odate)//'#'
+          write(*,*) 'ERROR: geth_idts:  odd length: #'//trim(odate)//'#'
           stop
        end select
     endif
@@ -775,12 +755,12 @@ contains
     end if
 
     if (.not. npass) then
-       print*, 'FATAL ERROR: In geth_idts() - Screwy NDATE: ', ndate(1:newlen)
+       print*, 'Screwy NDATE: ', ndate(1:newlen)
        stop
     end if
 
     if (.not. opass) then
-       print*, 'FATAL ERROR: In geth_idts() - Screwy ODATE: ', odate(1:oldlen)
+       print*, 'Screwy ODATE: ', odate(1:oldlen)
        stop
     end if
 
@@ -919,7 +899,7 @@ contains
        mm = 12
     else
        write(*, '("Function monthabbr_to_mm:  mon = <",A,">")') mon
-       stop  "FATAL ERROR: In monthabbr_to_mm() - Unrecognized mon"
+       stop  "Function monthabbr_to_mm:  Unrecognized mon"
     endif
   end function monthabbr_to_mm
 
@@ -950,7 +930,7 @@ contains
           outdate = indate(1:4)//indate(6:7)//indate(9:10)//indate(12:13)//indate(15:16)//&
                indate(18:19)//indate(21:inlen)
        case default
-          write(*,'("FATAL ERROR: In swap_date_format() - Unrecognized length: <", A,">")') indate
+          write(*,'("Unrecognized length: <", A,">")') indate
           stop
        end select
     else
@@ -975,7 +955,7 @@ contains
           outdate = indate(1:4)//"-"//indate(5:6)//"-"//indate(7:8)//"_"//&
                indate(9:10)//":"//indate(11:12)//":"//indate(13:14)//"."//indate(15:inlen)
        case default
-          write(*,'("FATAL ERROR: In swap_date_format() - Unrecognized length: <", A,">")') indate
+          write(*,'("Unrecognized length: <", A,">")') indate
           stop
        end select
     endif
@@ -991,7 +971,7 @@ contains
     if (ii > 0 .and. ii < 13 ) then
        mon = month(ii)
     else
-       stop "FATAL ERROR: In mm_to_monthabbr()- Unrecognized the index of months"
+       stop "mm_to_monthabbr"
     endif
   end function mm_to_monthabbr
 

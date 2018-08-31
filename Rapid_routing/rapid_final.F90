@@ -1,9 +1,9 @@
 !*******************************************************************************
-!Subroutine - rapid_final 
+!Subroutine rapid_final 
 !*******************************************************************************
 subroutine rapid_final
 
-!Purpose:
+!PURPOSE
 !This subroutine allows to finalize RAPID for both regular runs and 
 !optimization runs, by performing slightly different tasks depending on what 
 !option is chosen.  
@@ -15,15 +15,14 @@ subroutine rapid_final
 !Finalization tasks common to all RAPID options:
 !     -Prints some information about the types of objects used during simulation
 !     -Destroy all PETSc and TAO objects 
-!Author: 
-!Cedric H. David, 2012-2015. 
+!Author: Cedric H. David, 2012 
 
 
 !*******************************************************************************
 !Declaration of variables
 !*******************************************************************************
 use rapid_var, only :                                                          &
-                   IS_riv_bas,JS_riv_bas,                                      &
+                   IS_reachbas,JS_reachbas,                                    &
                    IS_opt_routing,IS_opt_run,                                  &
                    BS_opt_Qfinal,BS_opt_influence,                             &
                    Qfinal_file,babsmax_file,QoutRabsmin_file,QoutRabsmax_file, &
@@ -73,8 +72,8 @@ call VecScatterEnd(vecscat,ZV_QoutR,ZV_SeqZero,                                &
 call VecGetArrayF90(ZV_SeqZero,ZV_pointer,ierr)
 if (rank==0) then 
      open(31,file=Qfinal_file)
-     do JS_riv_bas=1,IS_riv_bas
-          write(31,*) ZV_pointer(JS_riv_bas)
+     do JS_reachbas=1,IS_reachbas
+          write(31,*) ZV_pointer(JS_reachbas)
      end do
      close(31)
 end if
@@ -92,8 +91,8 @@ call VecScatterEnd(vecscat,ZV_babsmax,ZV_SeqZero,                              &
 call VecGetArrayF90(ZV_SeqZero,ZV_pointer,ierr)
 if (rank==0) then 
      open(42,file=babsmax_file)
-     do JS_riv_bas=1,IS_riv_bas
-          write(42,*) ZV_pointer(JS_riv_bas)
+     do JS_reachbas=1,IS_reachbas
+          write(42,*) ZV_pointer(JS_reachbas)
      end do
      close(42)
 end if
@@ -111,8 +110,8 @@ call VecScatterEnd(vecscat,ZV_QoutRabsmin,ZV_SeqZero,                          &
 call VecGetArrayF90(ZV_SeqZero,ZV_pointer,ierr)
 if (rank==0) then 
      open(43,file=QoutRabsmin_file)
-     do JS_riv_bas=1,IS_riv_bas
-          write(43,*) ZV_pointer(JS_riv_bas)
+     do JS_reachbas=1,IS_reachbas
+          write(43,*) ZV_pointer(JS_reachbas)
      end do
      close(43)
 end if
@@ -130,8 +129,8 @@ call VecScatterEnd(vecscat,ZV_QoutRabsmax,ZV_SeqZero,                          &
 call VecGetArrayF90(ZV_SeqZero,ZV_pointer,ierr)
 if (rank==0) then 
      open(44,file=QoutRabsmax_file)
-     do JS_riv_bas=1,IS_riv_bas
-          write(44,*) ZV_pointer(JS_riv_bas)
+     do JS_reachbas=1,IS_reachbas
+          write(44,*) ZV_pointer(JS_reachbas)
      end do
      close(44)
 end if
@@ -152,13 +151,13 @@ call VecGetType(ZV_k,temp_char,ierr)
 call PetscPrintf(PETSC_COMM_WORLD,'type of vector: '//temp_char//char(10),ierr)
 call MatGetType(ZM_A,temp_char,ierr)
 call PetscPrintf(PETSC_COMM_WORLD,'type of matrix: '//temp_char//char(10),ierr)
-if (IS_opt_routing==1 .or. IS_opt_routing==3) then 
+if (IS_opt_routing==1) then 
      call KSPGetType(ksp,temp_char,ierr)
 else
      temp_char='No KSP'
 end if
 call PetscPrintf(PETSC_COMM_WORLD,'type of KSP   : '//temp_char//char(10),ierr)
-if (IS_opt_routing==1 .or. IS_opt_routing==3) then 
+if (IS_opt_routing==1) then 
      call KSPGetPC(ksp,pc,ierr)
      call PCGetType(pc,temp_char,ierr)
 else
@@ -170,7 +169,7 @@ call PetscPrintf(PETSC_COMM_WORLD,char(10),ierr)
 call PetscPrintf(PETSC_COMM_WORLD,'RAPID compiled and run without TAO',ierr)
 call PetscPrintf(PETSC_COMM_WORLD,char(10),ierr)
 #endif
-write(temp_char ,'(i10)') rank
+write(temp_char ,'(i10)')   rank
 write(temp_char2,'(i10)') IS_ksp_iter_max
 call PetscSynchronizedPrintf(PETSC_COMM_WORLD,'Rank     :'//temp_char //', '// &
                                               'Max KSP  :'//temp_char2//       &

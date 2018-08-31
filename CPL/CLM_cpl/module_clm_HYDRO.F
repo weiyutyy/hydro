@@ -1,24 +1,3 @@
-!  Program Name:
-!  Author(s)/Contact(s):
-!  Abstract:
-!  History Log:
-!  <brief list of changes to this source file>
-! 
-!  Usage:
-!  Parameters: <Specify typical arguments passed>
-!  Input Files:
-!        <list file names and briefly describe the data they include>
-!  Output Files:
-!        <list file names and briefly describe the information they include>
-! 
-!  Condition codes:
-!        <list exit condition or error codes returned >
-!        If appropriate, descriptive troubleshooting instructions or
-!        likely causes for failures could be mentioned here with the
-!        appropriate error code
-! 
-!  User controllable options: <if applicable>
-
 module module_CLM_HYDRO
     use domainMod        , only : ldomain
     use clmtype   , only : clm3
@@ -73,9 +52,7 @@ CONTAINS
 
         call get_cpl_date(cpl_land_dt)
 
-#ifdef HYDRO_D
         write(6,*) "cpl_land_dt = ",cpl_land_dt
-#endif
 
         ntime = 1
 
@@ -87,9 +64,8 @@ CONTAINS
             call HYDRO_ini(ntime,did,1,1)
 
             if(nlst_rt(did)%sys_cpl .ne. 4) then
-               write(6,*) "FATAL ERROR: sys_cpl should be 4."
-               call hydro_stop("In module_clm_HYDRO.F clm_cpl_HYDRO() - "// &
-                               "sys_cpl should be 4.  Check hydro.namelist file")
+               write(6,*) "Error: sys_cpl should be 4."
+               call hydro_stop()
             endif
 
             RT_DOMAIN(did)%initialized = .true.
@@ -98,8 +74,6 @@ CONTAINS
             nlst_rt(did)%olddate(1:19) = cpl_outdate(1:19)
         endif
 
-        if(nlst_rt(did)%rtFlag .eq. 0) return
-
         ix = rt_domain(did)%ix
         jx = rt_domain(did)%jx
 
@@ -107,12 +81,10 @@ CONTAINS
             call get_proc_global(numg, numl, numc, nump)
 
             call get_proc_bounds(begg, endg, begl, endl, begc, endc, begp, endp)
-#ifdef HYDRO_D
             write(6,*) "begg, endg, ", begg, endg
             write(6,*) "begl, endl, ", begl, endl
             write(6,*) "begc, endc, ", begc, endc
             write(6,*) "begp, endp, ", begp, endp
-#endif
 
 !            call get_proc_bounds( begg=begg, endg=endg )
             nn = endg - begg + 1
@@ -129,10 +101,8 @@ CONTAINS
                 'urbanf', 'unity')
             call clm2ND2d(clm_g1d,nn,RT_DOMAIN(did)%INFXSRT,ix,jx)
 
-#ifdef HYDRO_D
             write(6,*) "finish qflx_surf"
 
-#endif
 
             r1p => clm3%g%l%c%cwf%qflx_drain  
             call c2g_1d(begc, endc, begl, endl, begg, endg, r1p(begc:endc), clm_g1d, &
@@ -140,9 +110,9 @@ CONTAINS
             call clm2ND2d(clm_g1d,nn,RT_DOMAIN(did)%SOLDRAIN,ix,jx)
 
 
-#ifdef HYDRO_D
             write(6,*) "finish qflx_drain "
-#endif 
+             
+ 
             r2p =>clm3%g%l%c%ces%t_soisno 
                 call c2g_2d(begc, endc, begl, endl, begg, endg, nlevgrnd, r2p(begc:endc,1:nlevgrnd), clm_g2d, &
                 'urbanh', 'unity')
@@ -150,9 +120,8 @@ CONTAINS
                       ix,jx, nlst_rt(did)%nsoil,abs(RT_DOMAIN(did)%ZSOIL(1:nlst_rt(did)%nsoil)),&
                       RT_DOMAIN(did)%STC)
 
-#ifdef HYDRO_D
             write(6,*) "finish t_soisno   "
-#endif
+
 
             r2p => clm3%g%l%c%cws%h2osoi_vol  
                 call c2g_2d(begc, endc, begl, endl, begg, endg, nlevgrnd, r2p(begc:endc,1:nlevgrnd), clm_g2d, &
@@ -160,10 +129,9 @@ CONTAINS
             call clm2ND3d (clm_g2d,nn,nlevgrnd,zsoi(1:nlevgrnd), &
                      ix,jx, nlst_rt(did)%nsoil,abs(RT_DOMAIN(did)%ZSOIL(1:nlst_rt(did)%nsoil)),&
                      RT_DOMAIN(did)%SMC)
-#ifdef HYDRO_D
+            
             write(6,*) "finish h2osoi_vol "
 
-#endif
 
             r2p => clm3%g%l%c%cws%h2osoi_liq  
             call c2g_2d(begc, endc, begl, endl, begg, endg, nlevgrnd, r2p(begc:endc,1:nlevgrnd), clm_g2d, &
@@ -172,20 +140,17 @@ CONTAINS
                      ix,jx, nlst_rt(did)%nsoil,abs(RT_DOMAIN(did)%ZSOIL(1:nlst_rt(did)%nsoil)),&
                      RT_DOMAIN(did)%SH2OX)
             RT_DOMAIN(did)%SH2OX =  RT_DOMAIN(did)%SH2OX /1000.
- #ifdef HYDRO_D  
+   
             write(6,*) "finish h2osoi_liq "
 
             write(6,*) "before call HYDRO_exe" 
 
-#endif
 
 
             call HYDRO_exe(did)
 
-#ifdef HYDRO_D
             write(6,*) "after call HYDRO_exe" 
 
-#endif
 ! add for update the CLM state variable.
 
            clm_lev = 10
@@ -224,9 +189,7 @@ CONTAINS
      ! 3 d variable
      deallocate(clm_g1d)
      deallocate(clm_g2d)
-#ifdef HYDRO_D
             write(6,*) "end of drive ndhms"
-#endif
 
      return 
      end subroutine clm_cpl_HYDRO
@@ -273,17 +236,13 @@ CONTAINS
                 call TO1d(vg2d,vg,global_nx,global_ny)
             end if
 
-#ifdef HYDRO_D
             write(6,*) "before scatter_1d_r"
 
-#endif
 
             call scatter_1d_r(v1d_out,nn,vg,global_nx*global_ny)
 
-#ifdef HYDRO_D
             write(6,*) "after scatter_1d_r"
 
-#endif
          return
       end subroutine Toclm2d
       
@@ -342,7 +301,7 @@ CONTAINS
 !     gather 1d global array
 
           if(endg .gt. gni*gnj) then
-            write(6,*) "WARNING: endg > gni*gnj", endg, gni*gnj
+            write(6,*) "Error: endg > gni*gnj", endg, gni*gnj
             ! need to stop
           endif
           call gather_1d_real(v1d_in,nn,g1d,gni*gnj)
@@ -400,9 +359,8 @@ CONTAINS
 
          if(outZ .le. inZ(1)) then
              if(inZ(2) .eq. inZ(1)) then 
-                write(6,*) "FATAL ERROR: inZ(2)=inZ(1) ", inZ(2),inZ(1)
-               !stop 99
-               stop("In module_clm_HYDRO.F interpLayer() - inZ(2)=inZ(1)")
+                write(6,*) "Error: inZ(2)=inZ(1) ", inZ(2),inZ(1)
+                stop 99
              end if
              w1 = (inZ(2)-outZ)/(inZ(2)-inZ(1))
              w2 = (inZ(1)-outZ)/(inZ(2)-inZ(1))
@@ -410,9 +368,8 @@ CONTAINS
              return
          elseif(outZ .ge. inZ(inK)) then
              if(inZ(inK-1) .eq. inZ(inK)) then 
-                write(6,*) "FATAL ERROR: inZ(inK-1)=inZ(inK) ", inZ(inK-1),inZ(inK)
-                !stop 99
-                stop("FATAL ERROR: In module_clm_HYDRO.F interpLayer() - inZ(inK-1)=inZ(inK)")
+                write(6,*) "Error: inZ(inK-1)=inZ(inK) ", inZ(inK-1),inZ(inK)
+                stop 99
              end if
              w1 = (outZ-inZ(inK-1))/(inZ(inK)-inZ(inK-1)) 
              w2 = (outZ-inZ(inK))  /(inZ(inK)-inZ(inK-1))
@@ -424,9 +381,8 @@ CONTAINS
                 k1  = k-1
                 k2 = k
              if(inZ(k1) .eq. inZ(k2)) then 
-                write(6,*) "FATAL ERROR: inZ(k1)=inZ(k2) ", inZ(k1),inZ(k2)
-                !stop 99
-                stop("FATAL ERROR: In module_clm_HYDRO.F interpLayer()- inZ(k1)=inZ(k2)") 
+                write(6,*) "Error: inZ(k1)=inZ(k2) ", inZ(k1),inZ(k2)
+                stop 99
              end if
                 w1 = (outZ-inZ(k1))/(inZ(k2)-inZ(k1))
                 w2 = (inZ(k2)-outZ)/(inZ(k2)-inZ(k1))
@@ -495,10 +451,8 @@ CONTAINS
 !      write(cpl_outdate,'(I4,"-",I2,"-",I2,"_",I2,":",I2,":",I2)' )     &
 !            yr, mo, da, hr, mn, ss 
 
-#ifdef HYDRO_D
       write(6,*) "cpl_outdate = ",cpl_outdate
 
-#endif
     end subroutine get_cpl_date
 
 !    transfer the grid column to gridcell.
@@ -773,8 +727,7 @@ CONTAINS
           scale_l2g(l) = 1.0
        end do
     else
-       write(iulog,*)'WARNING: In module_clm_HYDRO.F c2g_2d() - '// &
-                     'scale type ',l2g_scale_type,' not supported'
+       write(iulog,*)'c2g_2d error: scale type ',l2g_scale_type,' not supported'
     end if
     if (c2l_scale_type == 'unity') then
        do c = lbc,ubc
@@ -832,8 +785,7 @@ CONTAINS
           end if
        end do
     else
-      write(iulog,*) 'WARNING: In module_clm_HYDRO.F c2g_2d()- '// &
-                     'scale type ',c2l_scale_type,' not supported'
+       write(iulog,*)'c2g_2d error: scale type ',c2l_scale_type,' not supported'
     end if
 
     do j = 1,num2d
@@ -930,8 +882,7 @@ CONTAINS
           scale_l2g(l) = 1.0
        end do
     else
-      write(iulog,*) 'WARNING: In module_clm_HYDRO.F g2c_2d_tmp - '// &
-                     'scale type ',l2g_scale_type,' not supported'
+       write(iulog,*)'c2g_2d error: scale type ',l2g_scale_type,' not supported'
     end if
     if (c2l_scale_type == 'unity') then
        do c = lbc,ubc
@@ -989,8 +940,7 @@ CONTAINS
           end if
        end do
     else
-      write(iulog,*) 'WARNING: In module_clm_HYDRO.F g2c_2d_tmp() - '// &
-                      'scale type ',c2l_scale_type,' not supported'
+       write(iulog,*)'c2g_2d error: scale type ',c2l_scale_type,' not supported'
     end if
 
     do j = 1,num2d

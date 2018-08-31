@@ -1,23 +1,3 @@
-!  Program Name:
-!  Author(s)/Contact(s):
-!  Abstract:
-!  History Log:
-! 
-!  Usage:
-!  Parameters: <Specify typical arguments passed>
-!  Input Files:
-!        <list file names and briefly describe the data they include>
-!  Output Files:
-!        <list file names and briefly describe the information they include>
-! 
-!  Condition codes:
-!        <list exit condition or error codes returned >
-!        If appropriate, descriptive troubleshooting instructions or
-!        likely causes for failures could be mentioned here with the
-!        appropriate error code
-! 
-!  User controllable options: <if applicable>
-
 !WRF:MEDIATION_LAYER:PHYSICS
 !
 MODULE module_surface_driver
@@ -1137,8 +1117,7 @@ CONTAINS
 #endif
          ENDIF
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for SFCLAY')
+         CALL wrf_error_fatal('Lacking arguments for SFCLAY in surface driver')
        ENDIF
 
      CASE (PXSFCSCHEME)
@@ -1148,9 +1127,7 @@ CONTAINS
                                                       .TRUE. ) THEN
          CALL wrf_debug( 100, 'in PX Surface Layer scheme' )
          IF ( FRACTIONAL_SEAICE == 1 ) THEN
-            CALL WRF_ERROR_FATAL("In module_surface_driver.F surface_driver() - "// &
-                 "PXSFCLAY not adapted for FRACTIONAL_SEAICE=1 option")
-
+            CALL WRF_ERROR_FATAL("PXSFCLAY not adapted for FRACTIONAL_SEAICE=1 option")
             CALL PXSFCLAY_SEAICE_WRAPPER(u_phytmp,v_phytmp,t_phy,th_phy,qv_curr,&
                  p_phy,dz8w,cp,g,rcp,r_d,xlv,psfc,chs,chs2,cqs2,cpm, &
                  znt,ust,pblh,mavail,zol,mol,regime,psim,psih,       &
@@ -1177,12 +1154,10 @@ CONTAINS
                i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte    )
          ENDIF
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for PX Surface Layer')
+         CALL wrf_error_fatal('Lacking arguments for PX Surface Layer in surface driver')
        ENDIF
 #else
-       CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-            'PX Surface Layer scheme cannot be used with NMM')
+       CALL wrf_error_fatal('PX Surface Layer scheme cannot be used with NMM')
 #endif
 
       CASE (MYJSFCSCHEME)
@@ -1243,8 +1218,7 @@ CONTAINS
 
         ENDIF
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for MYJSFC')
+         CALL wrf_error_fatal('Lacking arguments for MYJSFC in surface driver')
        ENDIF
 
       CASE (QNSESFCSCHEME)
@@ -1267,8 +1241,7 @@ CONTAINS
               ims,ime, jms,jme, kms,kme,                           &
               i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte    )
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for QNSESFC')
+         CALL wrf_error_fatal('Lacking arguments for QNSESFC in surface driver')
        ENDIF
 
      CASE (GFSSFCSCHEME)
@@ -1305,8 +1278,7 @@ CONTAINS
       ENDIF
         CALL wrf_debug(100,'in SFCDIAGS')
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for SF_GFS')
+         CALL wrf_error_fatal('Lacking arguments for SF_GFS in surface driver')
       ENDIF
 
 #if ( EM_CORE==1)
@@ -1331,8 +1303,7 @@ CONTAINS
                i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte    )
 
        ELSE
-          CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                               'Lacking arguments for SFCLAY_mynn')
+          CALL wrf_error_fatal('Lacking arguments for SFCLAY_mynn in surface driver')
  
        ENDIF
 #endif
@@ -1364,8 +1335,7 @@ CONTAINS
                its=i_start(ij),ite=i_end(ij),                      &
                jts=j_start(ij),jte=j_end(ij), kts=kts,kte=kte )
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for TEMFSFCLAY')
+         CALL wrf_error_fatal('Lacking arguments for TEMFSFCLAY in surface driver')
        ENDIF
 
      CASE (IDEALSCMSFCSCHEME)
@@ -1391,8 +1361,7 @@ CONTAINS
                its=i_start(ij),ite=i_end(ij),                      &
                jts=j_start(ij),jte=j_end(ij), kts=kts,kte=kte )
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for IDEALSCMSFCLAY')
+         CALL wrf_error_fatal('Lacking arguments for IDEALSCMSFCLAY in surface driver')
        ENDIF
 #endif
 
@@ -1427,8 +1396,7 @@ CONTAINS
      CASE DEFAULT
 
        WRITE( message , * )                                &
-       'In module_surface_driver.F surface_driver() - '// &
-       'The sfclay option does not exist: sf_sfclay_physics = ', sf_sfclay_physics
+   'The sfclay option does not exist: sf_sfclay_physics = ', sf_sfclay_physics
        CALL wrf_error_fatal ( message )
 
      END SELECT sfclay_select
@@ -1477,8 +1445,7 @@ CONTAINS
            ENDDO
 
            IF ( FRACTIONAL_SEAICE == 1 ) THEN
-              CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                   'SLAB scheme cannot be used with fractional seaice')
+              CALL wrf_error_fatal('SLAB scheme cannot be used with fractional seaice')
            ENDIF
         CALL wrf_debug(100,'in SLAB')
           CALL SLAB(t_phy,qv_curr,p_phy,flhc,flqc,  &
@@ -1728,8 +1695,7 @@ CONTAINS
 !------------------------------------------------------------------
 
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for LSM')
+         CALL wrf_error_fatal('Lacking arguments for LSM in surface driver')
        ENDIF
 
      CASE (RUCLSMSCHEME)
@@ -1860,8 +1826,7 @@ CONTAINS
 
 
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for RUCLSM')
+         CALL wrf_error_fatal('Lacking arguments for RUCLSM in surface driver')
        ENDIF
 
      CASE (PXLSMSCHEME)
@@ -1871,8 +1836,7 @@ CONTAINS
                                                       .TRUE. ) THEN
           IF ( FRACTIONAL_SEAICE == 1 ) THEN
 
-             CALL WRF_ERROR_FATAL("In module_surface_driver.F surface_driver() - "// &
-                  "PXLSM not adapted for FRACTIONAL_SEAICE=1 option")
+             CALL WRF_ERROR_FATAL("PXLSM not adapted for FRACTIONAL_SEAICE=1 option")
 
              IF ( isisfc ) THEN
                 !
@@ -1963,8 +1927,7 @@ CONTAINS
            ENDDO
 
        ELSE
-         CALL wrf_error_fatal('In module_surface_driver.F surface_driver() - '// &
-                              'Lacking arguments for P-X LSM')
+         CALL wrf_error_fatal('Lacking arguments for P-X LSM in surface driver')
        ENDIF
 
      CASE DEFAULT

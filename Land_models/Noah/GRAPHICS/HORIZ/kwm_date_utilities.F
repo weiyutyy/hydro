@@ -1,23 +1,3 @@
-!  Program Name:
-!  Author(s)/Contact(s):
-!  Abstract:
-!  History Log:
-! 
-!  Usage:
-!  Parameters: <Specify typical arguments passed>
-!  Input Files:
-!        <list file names and briefly describe the data they include>
-!  Output Files:
-!        <list file names and briefly describe the information they include>
-! 
-!  Condition codes:
-!        <list exit condition or error codes returned >
-!        If appropriate, descriptive troubleshooting instructions or
-!        likely causes for failures could be mentioned here with the
-!        appropriate error code
-! 
-!  User controllable options: <if applicable>
-
 module kwm_date_utilities
 contains
   subroutine geth_newdate (ndate, odate, idt)
@@ -213,7 +193,7 @@ contains
 !KWM      END IF
 
     if (.not.opass) then
-       write(*,*) 'FATAL ERROR: In kwm_date_utilities.F geth_newdate() - Crazy ODATE: ', odate(1:olen), olen
+       write(*,*) 'Crazy ODATE: ', odate(1:olen), olen
        call abort()
     end if
 
@@ -263,7 +243,7 @@ contains
        nsec   = 0
        nfrac  = 0
     else
-       write(*,'(''FATAL ERROR: In kwm_date_utilities.F geth_newdate() - Strange length for ODATE: '', i3)') &
+       write(*,'(''GETH_NEWDATE: Strange length for ODATE: '', i3)') &
             olen
        write(*,*) odate(1:olen)
        call abort()
@@ -412,7 +392,7 @@ contains
 8         format(i4,i2.2,i2.2)
 
        else
-          stop "FATAL ERROR: In kwm_date_utilities.F geth_newdate() - DATELEN PROBLEM"
+          stop "DATELEN PROBLEM"
        end if
     endif
 
@@ -467,7 +447,7 @@ contains
     olen = len(olddate)
     nlen = len(newdate)
     if (nlen.ne.olen) then
-       write(*,'("FATAL ERROR: In kwm_date_utilities.F geth_idts() - NLEN /= OLEN: ", A, 3x, A)') newdate(1:nlen), olddate(1:olen)
+       write(*,'("GETH_IDTS: NLEN /= OLEN: ", A, 3x, A)') newdate(1:nlen), olddate(1:olen)
        call abort
     endif
 
@@ -699,12 +679,12 @@ contains
     end if
 
     if (.not. npass) then
-       print*, 'FATAL ERROR: In kwm_data_utilities.F geth_idts() - Screwy NDATE: ', ndate(1:nlen)
+       print*, 'Screwy NDATE: ', ndate(1:nlen)
        call abort()
     end if
 
     if (.not. opass) then
-       print*, 'FATAL ERROR: In kwm_data_utilities.F geth_idts() - Screwy ODATE: ', odate(1:olen)
+       print*, 'Screwy ODATE: ', odate(1:olen)
        call abort()
     end if
 

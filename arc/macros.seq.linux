@@ -1,25 +1,12 @@
 .IGNORE:
-
-ifeq ($(SPATIAL_SOIL),1)
-SPATIAL_SOIL = -DSPATIAL_SOIL
-else
-SPATIAL_SOIL = 
-endif
-
-ifeq ($(HYDRO_REALTIME),1)
-HYDRO_REALTIME = -DHYDRO_REALTIME
-else
-HYDRO_REALTIME =
-endif
-
 ifeq ($(WRF_HYDRO),1)
-WRF_HYDRO = -DWRF_HYDRO $(HYDRO_REALTIME)
+WRF_HYDRO = -DWRF_HYDRO
 else
 WRF_HYDRO =
 endif
 
 ifeq ($(WRF_HYDRO_RAPID),1)
-WRF_HYDRO = -DWRF_HYDRO -DWRF_HYDRO_RAPID $(HYDRO_REALTIME)
+WRF_HYDRO = -DWRF_HYDRO -DWRF_HYDRO_RAPID
 endif
 
 ifeq ($(HYDRO_D),1)
@@ -34,18 +21,6 @@ else
 WRFIO_NCD_LARGE_FILE_SUPPORT = 
 endif
 
-ifeq ($(WRF_HYDRO_NUDGING),1)
-WRF_HYDRO_NUDGING = -DWRF_HYDRO_NUDGING
-else
-WRF_HYDRO_NUDGING = 
-endif
-
-ifeq ($(OUTPUT_CHAN_CONN),1)
-OUTPUT_CHAN_CONN = -DOUTPUT_CHAN_CONN
-else
-OUTPUT_CHAN_CONN = 
-endif
-
 
 RMD		=	ls 
 RM		=	rm -f
@@ -55,7 +30,7 @@ LDFLAGS  =      $(F90FLAGS)
 MODFLAG	=	-I./ -I ../mod
 LDFLAGS	=	
 CPP	=       cpp
-CPPFLAGS	=        -P -traditional -I ../Data_Rec $(HYDRO_D) $(WRF_HYDRO) $(SPATIAL_SOIL) $(WRFIO_NCD_LARGE_FILE_SUPPORT) $(WRF_HYDRO_NUDGING) $(OUTPUT_CHAN_CONN)
+CPPFLAGS	=       -C -P -traditional -I ../Data_Rec $(HYDRO_D) $(WRF_HYDRO) $(WRFIO_NCD_LARGE_FILE_SUPPORT)
 LIBS 	=	
 NETCDFINC       =       $(NETCDF_INC)
-NETCDFLIB       =       -Wl,-rpath,$(NETCDF_LIB) -L$(NETCDF_LIB) -lnetcdff -lnetcdf
+NETCDFLIB       =       -L$(NETCDF_LIB) -lnetcdff -lnetcdf
